@@ -37,17 +37,28 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'operator', 'viewer'],
+    enum: ['super_admin', 'admin', 'operator', 'viewer'],
     default: 'viewer'
+  },
+  organizationId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Organization',
+    default: null
   },
   permissions: [{
     type: String,
     enum: [
+      'view_shipments',
       'create_shipment',
       'edit_shipment',
       'delete_shipment',
       'view_analytics',
       'manage_users',
+      'manage_organization',
+      'manage_iot',
+      'view_reports',
+      'export_data',
+      'manage_integrations',
       'system_settings'
     ]
   }],
@@ -132,8 +143,10 @@ userSchema.virtual('isLocked').get(function() {
 // Indexes
 userSchema.index({ email: 1 });
 userSchema.index({ role: 1 });
+userSchema.index({ organizationId: 1 });
 userSchema.index({ isActive: 1 });
 userSchema.index({ createdAt: -1 });
+userSchema.index({ organizationId: 1, role: 1 });
 
 // Pre-save middleware to hash password
 userSchema.pre('save', async function(next) {
