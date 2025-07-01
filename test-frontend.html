@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargo Shipment Tracker - Test Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #1976d2, #42a5f5);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .shipment {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #fafafa;
+        }
+        .status {
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status.pending { background: #fff3cd; color: #856404; }
+        .status.in-transit { background: #d1ecf1; color: #0c5460; }
+        .status.delivered { background: #d4edda; color: #155724; }
+        .status.delayed { background: #f8d7da; color: #721c24; }
+        .btn {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover { background: #1565c0; }
+        .loading { text-align: center; padding: 20px; }
+        .error { color: #d32f2f; background: #ffebee; padding: 10px; border-radius: 4px; }
+        .success { color: #2e7d32; background: #e8f5e9; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚢 Cargo Shipment Tracker</h1>
+        <p>Test Interface - Backend API Status</p>
+    </div>
+
+    <div class="card">
+        <h2>API Status</h2>
+        <div id="api-status">Checking...</div>
+        <button class="btn" onclick="checkAPI()">Refresh API Status</button>
+        <button class="btn" onclick="loadShipments()">Load Shipments</button>
+    </div>
+
+    <div class="card">
+        <h2>Shipments Dashboard</h2>
+        <div id="shipments-container">
+            <div class="loading">Loading shipments...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000';
+
+        async function checkAPI() {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                document.getElementById('api-status').innerHTML = `
+                    <div class="success">
+                        ✅ API is running<br>
+                        Status: ${data.status}<br>
+                        Message: ${data.message}<br>
+                        Timestamp: ${new Date(data.timestamp).toLocaleString()}
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('api-status').innerHTML = `
+                    <div class="error">
+                        ❌ API connection failed<br>
+                        Error: ${error.message}<br>
+                        Make sure the backend server is running on port 5000
+                    </div>
+                `;
+            }
+        }
+
+        async function loadShipments() {
+            try {
+                document.getElementById('shipments-container').innerHTML = '<div class="loading">Loading shipments...</div>';
+                
+                const response = await fetch(`${API_URL}/api/shipments`);
+                const shipments = await response.json();
+                
+                if (shipments.length === 0) {
+                    document.getElementById('shipments-container').innerHTML = '<p>No shipments found.</p>';
+                    return;
+                }
+
+                let html = `<h3>Found ${shipments.length} shipments:</h3>`;
+                
+                shipments.forEach(shipment => {
+                    html += `
+                        <div class="shipment">
+                            <h4>📦 ${shipment.containerId}</h4>
+                            <p><strong>Status:</strong> <span class="status ${shipment.status}">${shipment.status}</span></p>
+                            <p><strong>Current Location:</strong> ${shipment.currentLocation?.location || 'Unknown'}</p>
+                            <p><strong>Coordinates:</strong> ${shipment.currentLocation?.coordinates?.lat || 'N/A'}, ${shipment.currentLocation?.coordinates?.lng || 'N/A'}</p>
+                            <p><strong>ETA:</strong> ${new Date(shipment.eta).toLocaleDateString()}</p>
+                            <p><strong>Created:</strong> ${new Date(shipment.createdAt).toLocaleDateString()}</p>
+                            ${shipment.currentLocation?.timestamp ? `<p><strong>Last Updated:</strong> ${new Date(shipment.currentLocation.timestamp).toLocaleString()}</p>` : ''}
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('shipments-container').innerHTML = html;
+                
+            } catch (error) {
+                document.getElementById('shipments-container').innerHTML = `
+                    <div class="error">
+                        ❌ Failed to load shipments<br>
+                        Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-load on page load
+        window.onload = function() {
+            checkAPI();
+            loadShipments();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(() => {
+                loadShipments();
+            }, 30000);
+        };
+    </script>
+</body>
+</html>
