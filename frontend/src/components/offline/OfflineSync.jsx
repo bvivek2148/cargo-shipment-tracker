@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Cloud, CloudOff, RefreshCw, AlertCircle, CheckCircle, Clock, Upload, Download } from 'lucide-react'
+import { Cloud, CloudOff, RefreshCw, AlertCircle, CheckCircle, Clock, Upload, Download, ChevronDown, ChevronUp } from 'lucide-react'
 import { useOfflineStatus, offlineStorage } from '../pwa/PWAManager'
 import toast from 'react-hot-toast'
 
@@ -11,6 +11,7 @@ function OfflineSync({ onSyncComplete }) {
   const [lastSyncTime, setLastSyncTime] = useState(null)
   const [syncProgress, setSyncProgress] = useState(0)
   const [conflictResolutions, setConflictResolutions] = useState([])
+  const [isMinimized, setIsMinimized] = useState(false)
 
   useEffect(() => {
     loadPendingOperations()
@@ -297,6 +298,64 @@ function OfflineSync({ onSyncComplete }) {
 
   return (
     <div className="offline-sync">
+      {/* Enhanced Connection Status Indicator */}
+      <div className={`connection-status-indicator ${isOnline ? 'online' : 'offline'} ${isMinimized ? 'minimized' : ''}`}>
+        <div className="connection-status-content" onClick={() => setIsMinimized(!isMinimized)}>
+          <div className="connection-icon">
+            {isOnline ? (
+              <div className="online-indicator">
+                <div className="signal-bars">
+                  <div className="bar bar-1"></div>
+                  <div className="bar bar-2"></div>
+                  <div className="bar bar-3"></div>
+                  <div className="bar bar-4"></div>
+                </div>
+                <Cloud size={18} />
+              </div>
+            ) : (
+              <div className="offline-indicator">
+                <CloudOff size={18} />
+                <div className="offline-pulse"></div>
+              </div>
+            )}
+          </div>
+
+          {!isMinimized && (
+            <div className="connection-text">
+              <span className="connection-label">
+                {isOnline ? 'Connected' : 'Offline Mode'}
+              </span>
+              <span className="connection-description">
+                {isOnline ? 'Real-time sync active' : 'Changes saved locally'}
+              </span>
+            </div>
+          )}
+
+          <div className="connection-toggle">
+            {isMinimized ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+          </div>
+        </div>
+
+        {!isMinimized && syncStatus !== 'idle' && (
+          <div className="sync-status-badge">
+            <div className={`sync-icon-small ${getSyncStatusColor()}`}>
+              {getSyncStatusIcon()}
+            </div>
+            <span className="sync-status-text">
+              {syncStatus === 'syncing' && `${Math.round(syncProgress)}%`}
+              {syncStatus === 'success' && 'Synced'}
+              {syncStatus === 'error' && 'Error'}
+            </span>
+          </div>
+        )}
+
+        {isMinimized && pendingOperations.length > 0 && (
+          <div className="pending-indicator">
+            {pendingOperations.length}
+          </div>
+        )}
+      </div>
+
       {/* Sync Status Bar */}
       <div className="sync-status-bar">
         <div className="sync-status">
@@ -308,7 +367,7 @@ function OfflineSync({ onSyncComplete }) {
               {syncStatus === 'syncing' && `Syncing... ${Math.round(syncProgress)}%`}
               {syncStatus === 'success' && 'All data synced'}
               {syncStatus === 'error' && 'Sync issues detected'}
-              {syncStatus === 'idle' && (isOnline ? 'Online' : 'Offline')}
+              {syncStatus === 'idle' && 'Ready to sync'}
             </span>
             <span className="sync-time">
               Last sync: {formatTime(lastSyncTime)}
@@ -322,8 +381,8 @@ function OfflineSync({ onSyncComplete }) {
               {pendingOperations.length} pending
             </span>
           )}
-          
-          <button 
+
+          <button
             onClick={manualSync}
             disabled={!isOnline || syncStatus === 'syncing'}
             className="sync-button"
