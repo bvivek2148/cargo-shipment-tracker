@@ -46,12 +46,78 @@ function RealTimeTracker({ shipment, onLocationUpdate }) {
 
   const getInitialLocation = () => {
     const cityCoordinates = {
+      // USA
       'New York, USA': { lat: 40.7128, lng: -74.0060, name: 'New York Port' },
-      'London, UK': { lat: 51.5074, lng: -0.1278, name: 'London Gateway' },
-      'Shanghai, China': { lat: 31.2304, lng: 121.4737, name: 'Shanghai Port' },
       'Los Angeles, USA': { lat: 34.0522, lng: -118.2437, name: 'LA Port' },
+      'Miami, USA': { lat: 25.7617, lng: -80.1918, name: 'Miami Port' },
+      'Seattle, USA': { lat: 47.6062, lng: -122.3321, name: 'Seattle Port' },
+      'Houston, USA': { lat: 29.7604, lng: -95.3698, name: 'Houston Port' },
+
+      // India - Major ports and cities
+      'Mumbai, India': { lat: 19.0760, lng: 72.8777, name: 'Mumbai Port' },
+      'Chennai, India': { lat: 13.0827, lng: 80.2707, name: 'Chennai Port' },
+      'Kolkata, India': { lat: 22.5726, lng: 88.3639, name: 'Kolkata Port' },
+      'Bangalore, India': { lat: 12.9716, lng: 77.5946, name: 'Bangalore Hub' },
+      'Delhi, India': { lat: 28.7041, lng: 77.1025, name: 'Delhi Gateway' },
+      'Pune, India': { lat: 18.5204, lng: 73.8567, name: 'Pune Center' },
+      'Hyderabad, India': { lat: 17.3850, lng: 78.4867, name: 'Hyderabad Hub' },
+      'Kochi, India': { lat: 9.9312, lng: 76.2673, name: 'Kochi Port' },
+      'Visakhapatnam, India': { lat: 17.6868, lng: 83.2185, name: 'Vizag Port' },
+      'Ahmedabad, India': { lat: 23.0225, lng: 72.5714, name: 'Ahmedabad Hub' },
+      'Kandla, India': { lat: 23.0333, lng: 70.2167, name: 'Kandla Port' },
+      'Tuticorin, India': { lat: 8.7642, lng: 78.1348, name: 'Tuticorin Port' },
+
+      // China
+      'Shanghai, China': { lat: 31.2304, lng: 121.4737, name: 'Shanghai Port' },
+      'Shenzhen, China': { lat: 22.5431, lng: 114.0579, name: 'Shenzhen Port' },
+      'Guangzhou, China': { lat: 23.1291, lng: 113.2644, name: 'Guangzhou Port' },
+      'Beijing, China': { lat: 39.9042, lng: 116.4074, name: 'Beijing Hub' },
+      'Tianjin, China': { lat: 39.3434, lng: 117.3616, name: 'Tianjin Port' },
+
+      // Europe
+      'London, UK': { lat: 51.5074, lng: -0.1278, name: 'London Gateway' },
+      'Hamburg, Germany': { lat: 53.5511, lng: 9.9937, name: 'Hamburg Port' },
+      'Rotterdam, Netherlands': { lat: 51.9244, lng: 4.4777, name: 'Rotterdam Port' },
+      'Antwerp, Belgium': { lat: 51.2194, lng: 4.4025, name: 'Antwerp Port' },
+      'Le Havre, France': { lat: 49.4944, lng: 0.1079, name: 'Le Havre Port' },
+      'Felixstowe, UK': { lat: 51.9642, lng: 1.3518, name: 'Felixstowe Port' },
+      'Frankfurt, Germany': { lat: 50.1109, lng: 8.6821, name: 'Frankfurt Hub' },
+
+      // Middle East
+      'Dubai, UAE': { lat: 25.2048, lng: 55.2708, name: 'Dubai Port' },
+      'Jeddah, Saudi Arabia': { lat: 21.4858, lng: 39.1925, name: 'Jeddah Port' },
+      'Kuwait City, Kuwait': { lat: 29.3759, lng: 47.9774, name: 'Kuwait Port' },
+
+      // Southeast Asia
+      'Singapore': { lat: 1.3521, lng: 103.8198, name: 'Singapore Port' },
+      'Bangkok, Thailand': { lat: 13.7563, lng: 100.5018, name: 'Bangkok Port' },
+      'Ho Chi Minh City, Vietnam': { lat: 10.8231, lng: 106.6297, name: 'HCMC Port' },
+      'Jakarta, Indonesia': { lat: -6.2088, lng: 106.8456, name: 'Jakarta Port' },
+      'Manila, Philippines': { lat: 14.5995, lng: 120.9842, name: 'Manila Port' },
+
+      // East Asia
       'Tokyo, Japan': { lat: 35.6762, lng: 139.6503, name: 'Tokyo Bay' },
-      'Sydney, Australia': { lat: -33.8688, lng: 151.2093, name: 'Sydney Harbor' }
+      'Busan, South Korea': { lat: 35.1796, lng: 129.0756, name: 'Busan Port' },
+
+      // Africa
+      'Cape Town, South Africa': { lat: -33.9249, lng: 18.4241, name: 'Cape Town Port' },
+      'Lagos, Nigeria': { lat: 6.5244, lng: 3.3792, name: 'Lagos Port' },
+      'Alexandria, Egypt': { lat: 31.2001, lng: 29.9187, name: 'Alexandria Port' },
+      'Casablanca, Morocco': { lat: 33.5731, lng: -7.5898, name: 'Casablanca Port' },
+
+      // South America
+      'São Paulo, Brazil': { lat: -23.5505, lng: -46.6333, name: 'Santos Port' },
+      'Buenos Aires, Argentina': { lat: -34.6118, lng: -58.3960, name: 'Buenos Aires Port' },
+      'Valparaíso, Chile': { lat: -33.0472, lng: -71.6127, name: 'Valparaíso Port' },
+
+      // Australia/Oceania
+      'Sydney, Australia': { lat: -33.8688, lng: 151.2093, name: 'Sydney Harbor' },
+      'Melbourne, Australia': { lat: -37.8136, lng: 144.9631, name: 'Melbourne Port' },
+      'Perth, Australia': { lat: -31.9505, lng: 115.8605, name: 'Perth Port' },
+
+      // South Asia
+      'Karachi, Pakistan': { lat: 24.8607, lng: 67.0011, name: 'Karachi Port' },
+      'Colombo, Sri Lanka': { lat: 6.9271, lng: 79.8612, name: 'Colombo Port' }
     }
 
     const origin = cityCoordinates[shipment.origin]

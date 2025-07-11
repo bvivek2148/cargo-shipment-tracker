@@ -299,7 +299,10 @@ function OfflineSync({ onSyncComplete }) {
   return (
     <div className="offline-sync">
       {/* Enhanced Connection Status Indicator */}
-      <div className={`connection-status-indicator ${isOnline ? 'online' : 'offline'} ${isMinimized ? 'minimized' : ''}`}>
+      <div className={`connection-status-indicator ${
+        syncStatus === 'error' ? 'error' :
+        isOnline ? 'online' : 'offline'
+      } ${isMinimized ? 'minimized' : ''}`}>
         <div className="connection-status-content" onClick={() => setIsMinimized(!isMinimized)}>
           <div className="connection-icon">
             {isOnline ? (
@@ -328,6 +331,11 @@ function OfflineSync({ onSyncComplete }) {
               <span className="connection-description">
                 {isOnline ? 'Real-time sync active' : 'Changes saved locally'}
               </span>
+              {lastSyncTime && (
+                <span className="connection-last-sync">
+                  Last sync: {formatTime(lastSyncTime)}
+                </span>
+              )}
             </div>
           )}
 
@@ -336,16 +344,29 @@ function OfflineSync({ onSyncComplete }) {
           </div>
         </div>
 
-        {!isMinimized && syncStatus !== 'idle' && (
-          <div className="sync-status-badge">
-            <div className={`sync-icon-small ${getSyncStatusColor()}`}>
-              {getSyncStatusIcon()}
-            </div>
-            <span className="sync-status-text">
-              {syncStatus === 'syncing' && `${Math.round(syncProgress)}%`}
-              {syncStatus === 'success' && 'Synced'}
-              {syncStatus === 'error' && 'Error'}
-            </span>
+        {!isMinimized && (
+          <div className="connection-actions">
+            {syncStatus !== 'idle' && (
+              <div className="sync-status-badge">
+                <div className={`sync-icon-small ${getSyncStatusColor()}`}>
+                  {getSyncStatusIcon()}
+                </div>
+                <span className="sync-status-text">
+                  {syncStatus === 'syncing' && `${Math.round(syncProgress)}%`}
+                  {syncStatus === 'success' && 'Synced'}
+                  {syncStatus === 'error' && 'Error'}
+                </span>
+              </div>
+            )}
+
+            <button
+              onClick={manualSync}
+              disabled={!isOnline || syncStatus === 'syncing'}
+              className="connection-sync-button"
+              title="Manual sync"
+            >
+              <RefreshCw size={14} className={syncStatus === 'syncing' ? 'spinning' : ''} />
+            </button>
           </div>
         )}
 
@@ -354,23 +375,63 @@ function OfflineSync({ onSyncComplete }) {
             {pendingOperations.length}
           </div>
         )}
+
+        {isMinimized && syncStatus === 'syncing' && (
+          <div className="sync-progress-mini">
+            <div className="progress-ring">
+              <div className="progress-fill" style={{ transform: `rotate(${syncProgress * 3.6}deg)` }}></div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Sync Status Bar */}
-      <div className="sync-status-bar">
+      <div className={`sync-status-bar ${syncStatus}`}>
         <div className="sync-status">
           <div className={`sync-icon ${getSyncStatusColor()}`}>
             {getSyncStatusIcon()}
           </div>
           <div className="sync-info">
-            <span className="sync-text">
-              {syncStatus === 'syncing' && `Syncing... ${Math.round(syncProgress)}%`}
-              {syncStatus === 'success' && 'All data synced'}
-              {syncStatus === 'error' && 'Sync issues detected'}
-              {syncStatus === 'idle' && 'Ready to sync'}
+            <span className={`sync-text ${syncStatus}`}>
+              {syncStatus === 'syncing' && (
+                <>
+                  <span className="sync-emoji">⚡</span>
+                  Syncing data... {Math.round(syncProgress)}%
+                </>
+              )}
+              {syncStatus === 'success' && (
+                <>
+                  <span className="sync-emoji">✅</span>
+                  All data synchronized successfully
+                </>
+              )}
+              {syncStatus === 'error' && (
+                <>
+                  <span className="sync-emoji">⚠️</span>
+                  Sync issues detected - click to retry
+                </>
+              )}
+              {syncStatus === 'idle' && (isOnline ? (
+                <>
+                  <span className="sync-emoji">🔄</span>
+                  System ready - all changes synchronized
+                </>
+              ) : (
+                <>
+                  <span className="sync-emoji">📱</span>
+                  Offline mode - changes saved locally
+                </>
+              ))}
             </span>
             <span className="sync-time">
-              Last sync: {formatTime(lastSyncTime)}
+              {lastSyncTime ? (
+                <>
+                  <span className="sync-time-label">Last sync:</span>
+                  <span className="sync-time-value">{formatTime(lastSyncTime)}</span>
+                </>
+              ) : (
+                <span className="sync-time-label">No sync performed yet</span>
+              )}
             </span>
           </div>
         </div>
@@ -387,7 +448,7 @@ function OfflineSync({ onSyncComplete }) {
             disabled={!isOnline || syncStatus === 'syncing'}
             className="sync-button"
           >
-            <RefreshCw size={14} />
+            <RefreshCw size={14} className={syncStatus === 'syncing' ? 'spinning' : ''} />
             Sync
           </button>
         </div>
@@ -397,8 +458,8 @@ function OfflineSync({ onSyncComplete }) {
       {syncStatus === 'syncing' && (
         <div className="sync-progress">
           <div className="progress-bar">
-            <div 
-              className="progress-fill" 
+            <div
+              className="progress-fill"
               style={{ width: `${syncProgress}%` }}
             ></div>
           </div>

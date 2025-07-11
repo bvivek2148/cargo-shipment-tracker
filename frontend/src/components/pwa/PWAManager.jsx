@@ -134,16 +134,6 @@ function PWAManager() {
 
   return (
     <>
-      {/* Online/Offline Status Indicator */}
-      <div className={`connection-status ${isOnline ? 'online' : 'offline'}`}>
-        {isOnline ? (
-          <Wifi size={16} />
-        ) : (
-          <WifiOff size={16} />
-        )}
-        <span>{isOnline ? 'Online' : 'Offline'}</span>
-      </div>
-
       {/* Install App Prompt */}
       {shouldShowInstallPrompt && (
         <div className="install-prompt">

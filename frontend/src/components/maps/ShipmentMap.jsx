@@ -62,18 +62,80 @@ function ShipmentMap({ shipments = [], selectedShipment = null, onShipmentSelect
   const [mapCenter, setMapCenter] = useState([40.7128, -74.0060]) // Default to NYC
   const [mapZoom, setMapZoom] = useState(4)
 
-  // Sample coordinates for major cities (in a real app, this would come from a geocoding service)
+  // Comprehensive coordinates for global cities (in a real app, this would come from a geocoding service)
   const cityCoordinates = {
+    // USA
     'New York, USA': [40.7128, -74.0060],
-    'London, UK': [51.5074, -0.1278],
-    'Shanghai, China': [31.2304, 121.4737],
     'Los Angeles, USA': [34.0522, -118.2437],
-    'Tokyo, Japan': [35.6762, 139.6503],
-    'Sydney, Australia': [-33.8688, 151.2093],
+    'Miami, USA': [25.7617, -80.1918],
+    'Seattle, USA': [47.6062, -122.3321],
+    'Houston, USA': [29.7604, -95.3698],
+
+    // India - Major ports and cities
+    'Mumbai, India': [19.0760, 72.8777],
+    'Chennai, India': [13.0827, 80.2707],
+    'Kolkata, India': [22.5726, 88.3639],
+    'Bangalore, India': [12.9716, 77.5946],
+    'Delhi, India': [28.7041, 77.1025],
+    'Pune, India': [18.5204, 73.8567],
+    'Hyderabad, India': [17.3850, 78.4867],
+    'Kochi, India': [9.9312, 76.2673],
+    'Visakhapatnam, India': [17.6868, 83.2185],
+    'Ahmedabad, India': [23.0225, 72.5714],
+    'Kandla, India': [23.0333, 70.2167],
+    'Tuticorin, India': [8.7642, 78.1348],
+
+    // China
+    'Shanghai, China': [31.2304, 121.4737],
+    'Shenzhen, China': [22.5431, 114.0579],
+    'Guangzhou, China': [23.1291, 113.2644],
+    'Beijing, China': [39.9042, 116.4074],
+    'Tianjin, China': [39.3434, 117.3616],
+
+    // Europe
+    'London, UK': [51.5074, -0.1278],
     'Hamburg, Germany': [53.5511, 9.9937],
-    'Singapore': [1.3521, 103.8198],
+    'Rotterdam, Netherlands': [51.9244, 4.4777],
+    'Antwerp, Belgium': [51.2194, 4.4025],
+    'Le Havre, France': [49.4944, 0.1079],
+    'Felixstowe, UK': [51.9642, 1.3518],
+    'Frankfurt, Germany': [50.1109, 8.6821],
+
+    // Middle East
     'Dubai, UAE': [25.2048, 55.2708],
-    'Mumbai, India': [19.0760, 72.8777]
+    'Jeddah, Saudi Arabia': [21.4858, 39.1925],
+    'Kuwait City, Kuwait': [29.3759, 47.9774],
+
+    // Southeast Asia
+    'Singapore': [1.3521, 103.8198],
+    'Bangkok, Thailand': [13.7563, 100.5018],
+    'Ho Chi Minh City, Vietnam': [10.8231, 106.6297],
+    'Jakarta, Indonesia': [6.2088, 106.8456],
+    'Manila, Philippines': [14.5995, 120.9842],
+
+    // East Asia
+    'Tokyo, Japan': [35.6762, 139.6503],
+    'Busan, South Korea': [35.1796, 129.0756],
+
+    // Africa
+    'Cape Town, South Africa': [-33.9249, 18.4241],
+    'Lagos, Nigeria': [6.5244, 3.3792],
+    'Alexandria, Egypt': [31.2001, 29.9187],
+    'Casablanca, Morocco': [33.5731, -7.5898],
+
+    // South America
+    'São Paulo, Brazil': [-23.5505, -46.6333],
+    'Buenos Aires, Argentina': [-34.6118, -58.3960],
+    'Valparaíso, Chile': [-33.0472, -71.6127],
+
+    // Australia/Oceania
+    'Sydney, Australia': [-33.8688, 151.2093],
+    'Melbourne, Australia': [-37.8136, 144.9631],
+    'Perth, Australia': [-31.9505, 115.8605],
+
+    // South Asia
+    'Karachi, Pakistan': [24.8607, 67.0011],
+    'Colombo, Sri Lanka': [6.9271, 79.8612]
   }
 
   // Get coordinates for a city

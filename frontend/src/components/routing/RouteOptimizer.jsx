@@ -93,19 +93,82 @@ function RouteOptimizerComponent({ shipment, onRouteUpdate }) {
   const [routeStats, setRouteStats] = useState(null)
   const [optimizationMethod, setOptimizationMethod] = useState('nearestNeighbor')
 
-  // City coordinates database
+  // Comprehensive city coordinates database
   const cityCoordinates = {
+    // USA
     'New York, USA': { lat: 40.7128, lng: -74.0060, name: 'New York, USA' },
-    'London, UK': { lat: 51.5074, lng: -0.1278, name: 'London, UK' },
-    'Shanghai, China': { lat: 31.2304, lng: 121.4737, name: 'Shanghai, China' },
     'Los Angeles, USA': { lat: 34.0522, lng: -118.2437, name: 'Los Angeles, USA' },
-    'Tokyo, Japan': { lat: 35.6762, lng: 139.6503, name: 'Tokyo, Japan' },
-    'Sydney, Australia': { lat: -33.8688, lng: 151.2093, name: 'Sydney, Australia' },
-    'Hamburg, Germany': { lat: 53.5511, lng: 9.9937, name: 'Hamburg, Germany' },
-    'Singapore': { lat: 1.3521, lng: 103.8198, name: 'Singapore' },
-    'Dubai, UAE': { lat: 25.2048, lng: 55.2708, name: 'Dubai, UAE' },
+    'Miami, USA': { lat: 25.7617, lng: -80.1918, name: 'Miami, USA' },
+    'Seattle, USA': { lat: 47.6062, lng: -122.3321, name: 'Seattle, USA' },
+    'Houston, USA': { lat: 29.7604, lng: -95.3698, name: 'Houston, USA' },
+
+    // India - Major ports and cities
     'Mumbai, India': { lat: 19.0760, lng: 72.8777, name: 'Mumbai, India' },
+    'Chennai, India': { lat: 13.0827, lng: 80.2707, name: 'Chennai, India' },
+    'Kolkata, India': { lat: 22.5726, lng: 88.3639, name: 'Kolkata, India' },
+    'Bangalore, India': { lat: 12.9716, lng: 77.5946, name: 'Bangalore, India' },
+    'Delhi, India': { lat: 28.7041, lng: 77.1025, name: 'Delhi, India' },
+    'Pune, India': { lat: 18.5204, lng: 73.8567, name: 'Pune, India' },
+    'Hyderabad, India': { lat: 17.3850, lng: 78.4867, name: 'Hyderabad, India' },
+    'Kochi, India': { lat: 9.9312, lng: 76.2673, name: 'Kochi, India' },
+    'Visakhapatnam, India': { lat: 17.6868, lng: 83.2185, name: 'Visakhapatnam, India' },
+    'Ahmedabad, India': { lat: 23.0225, lng: 72.5714, name: 'Ahmedabad, India' },
+    'Kandla, India': { lat: 23.0333, lng: 70.2167, name: 'Kandla, India' },
+    'Tuticorin, India': { lat: 8.7642, lng: 78.1348, name: 'Tuticorin, India' },
+
+    // China
+    'Shanghai, China': { lat: 31.2304, lng: 121.4737, name: 'Shanghai, China' },
+    'Shenzhen, China': { lat: 22.5431, lng: 114.0579, name: 'Shenzhen, China' },
+    'Guangzhou, China': { lat: 23.1291, lng: 113.2644, name: 'Guangzhou, China' },
+    'Beijing, China': { lat: 39.9042, lng: 116.4074, name: 'Beijing, China' },
+    'Tianjin, China': { lat: 39.3434, lng: 117.3616, name: 'Tianjin, China' },
+
+    // Europe
+    'London, UK': { lat: 51.5074, lng: -0.1278, name: 'London, UK' },
+    'Hamburg, Germany': { lat: 53.5511, lng: 9.9937, name: 'Hamburg, Germany' },
     'Rotterdam, Netherlands': { lat: 51.9244, lng: 4.4777, name: 'Rotterdam, Netherlands' },
+    'Antwerp, Belgium': { lat: 51.2194, lng: 4.4025, name: 'Antwerp, Belgium' },
+    'Le Havre, France': { lat: 49.4944, lng: 0.1079, name: 'Le Havre, France' },
+    'Felixstowe, UK': { lat: 51.9642, lng: 1.3518, name: 'Felixstowe, UK' },
+    'Frankfurt, Germany': { lat: 50.1109, lng: 8.6821, name: 'Frankfurt, Germany' },
+
+    // Middle East
+    'Dubai, UAE': { lat: 25.2048, lng: 55.2708, name: 'Dubai, UAE' },
+    'Jeddah, Saudi Arabia': { lat: 21.4858, lng: 39.1925, name: 'Jeddah, Saudi Arabia' },
+    'Kuwait City, Kuwait': { lat: 29.3759, lng: 47.9774, name: 'Kuwait City, Kuwait' },
+
+    // Southeast Asia
+    'Singapore': { lat: 1.3521, lng: 103.8198, name: 'Singapore' },
+    'Bangkok, Thailand': { lat: 13.7563, lng: 100.5018, name: 'Bangkok, Thailand' },
+    'Ho Chi Minh City, Vietnam': { lat: 10.8231, lng: 106.6297, name: 'Ho Chi Minh City, Vietnam' },
+    'Jakarta, Indonesia': { lat: -6.2088, lng: 106.8456, name: 'Jakarta, Indonesia' },
+    'Manila, Philippines': { lat: 14.5995, lng: 120.9842, name: 'Manila, Philippines' },
+
+    // East Asia
+    'Tokyo, Japan': { lat: 35.6762, lng: 139.6503, name: 'Tokyo, Japan' },
+    'Busan, South Korea': { lat: 35.1796, lng: 129.0756, name: 'Busan, South Korea' },
+
+    // Africa
+    'Cape Town, South Africa': { lat: -33.9249, lng: 18.4241, name: 'Cape Town, South Africa' },
+    'Lagos, Nigeria': { lat: 6.5244, lng: 3.3792, name: 'Lagos, Nigeria' },
+    'Alexandria, Egypt': { lat: 31.2001, lng: 29.9187, name: 'Alexandria, Egypt' },
+    'Casablanca, Morocco': { lat: 33.5731, lng: -7.5898, name: 'Casablanca, Morocco' },
+
+    // South America
+    'São Paulo, Brazil': { lat: -23.5505, lng: -46.6333, name: 'São Paulo, Brazil' },
+    'Buenos Aires, Argentina': { lat: -34.6118, lng: -58.3960, name: 'Buenos Aires, Argentina' },
+    'Valparaíso, Chile': { lat: -33.0472, lng: -71.6127, name: 'Valparaíso, Chile' },
+
+    // Australia/Oceania
+    'Sydney, Australia': { lat: -33.8688, lng: 151.2093, name: 'Sydney, Australia' },
+    'Melbourne, Australia': { lat: -37.8136, lng: 144.9631, name: 'Melbourne, Australia' },
+    'Perth, Australia': { lat: -31.9505, lng: 115.8605, name: 'Perth, Australia' },
+
+    // South Asia
+    'Karachi, Pakistan': { lat: 24.8607, lng: 67.0011, name: 'Karachi, Pakistan' },
+    'Colombo, Sri Lanka': { lat: 6.9271, lng: 79.8612, name: 'Colombo, Sri Lanka' },
+
+    // Additional major hubs
     'Hong Kong': { lat: 22.3193, lng: 114.1694, name: 'Hong Kong' }
   }
 
